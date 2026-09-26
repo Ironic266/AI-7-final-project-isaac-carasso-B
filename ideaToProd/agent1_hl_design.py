@@ -1,14 +1,16 @@
+from urllib import response
+
 from dotenv import load_dotenv
 
 from agno.agent import Agent
 from agno.models.openai import OpenAIResponses
-from agno.tools.google_drive import GoogleDriveTools
+from agno.tools.google.drive import GoogleDriveTools
 #from agno.tools.websearch import WebSearchTools
 from agno.models.openai import OpenAIResponses
 load_dotenv()
 
-idea_name = "hourglass-B_1.0"
-idea_description = "a lightweight desktop application written in Python that displays an hourglass animated GIF inside a small “messagebox-style” window. The user can choose a desired **cycle time** (the duration of a full GIF loop) using a dropdown or manual text input. The application adjusts playback timing to match the selected cycle time while enforcing bounds of **1–120 seconds**. A special playback rule applies: **the last 9 frames always play at 12 FPS**, regardless of the chosen cycle time. The UI provides real-time indicators including current frame index, selected cycle time, and computed effective frame rate."
+IDEA_NAME = "hourglass-B_1.0"
+IDEA_DESCRIPTION = "a lightweight desktop application written in Python that displays an hourglass animated GIF inside a small “messagebox-style” window. The user can choose a desired **cycle time** (the duration of a full GIF loop) using a dropdown or manual text input. The application adjusts playback timing to match the selected cycle time while enforcing bounds of **1–120 seconds**. A special playback rule applies: **the last 9 frames always play at 12 FPS**, regardless of the chosen cycle time. The UI provides real-time indicators including current frame index, selected cycle time, and computed effective frame rate."
 
 
 agent = Agent(
@@ -31,10 +33,39 @@ agent = Agent(
     description="High-level design agent for software ideas.",
 )
 
-prompt = (
-    f"Create a complete high-level design document in Markdown for the following software idea.\n"
-    f"Idea name: {idea_name}\n"
-    f"Idea description: {idea_description}\n"
-)
+def _normalize_agent_output(response: object) -> str:
+    if isinstance(response, str):
+        return response.strip()
 
-agent.print_response(prompt, stream=True)
+    for attribute in ("content", "text", "output", "message"):
+        value = getattr(response, attribute, None)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    return str(response).strip()
+
+def create_hl_design(
+    idea_name: str,
+    idea_description: str
+) -> str:
+    prompt = (
+        f"Create a complete high-level design document in Markdown for the following software idea.\n"
+        f"Idea name: {idea_name}\n"
+        f"Idea description: {idea_description}\n"
+    )
+    
+    # response = agent.print_response(prompt, stream=False)
+    #agent.stream=True;
+    response = agent.run(prompt)
+    # generated = _normalize_agent_output(response)
+    return _normalize_agent_output(response)
+
+def main() -> None:
+    hl_design = create_hl_design(
+        idea_name=IDEA_NAME,
+        idea_description=IDEA_DESCRIPTION
+    )
+    print(hl_design)
+
+if __name__ == "__main__":
+    main()
