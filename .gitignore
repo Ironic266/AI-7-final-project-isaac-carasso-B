@@ -1,0 +1,8 @@
+.env
+.venv
+
+C:\AI-7-final-project-isaac-carasso-B\ideaToProd\.env
+Projects/*
+C:/AI-7-final-project-isaac-carasso-B/ideaToProd/__pycache__/*.*
+*.zip
+*.gif

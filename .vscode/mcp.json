@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "ideaToProd": {
+        "command": "python",
+        "args":["ideaToProd/server.py",
+                "name",
+                "description", 
+        ],
+    },
+    "playwright": {
+        "command": "npx",
+        "args": ["@playwright/mcp@latest"],
+        "env": {"DISPLAY": ":1"},
+    }
+  }
+}
